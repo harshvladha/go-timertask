@@ -5,6 +5,8 @@ import "time"
 type TimerTask struct {
 	task     Task
 	duration time.Duration
+	ticker   *time.Ticker
+	exit     chan bool
 }
 
 type Task struct {
@@ -31,26 +33,36 @@ func NewTask(f func(interface{})) *Task {
 	}
 }
 
+// Stops the given timer task from further execution
+// Once stopped it won't run again
+func (t *TimerTask) Stop() {
+	t.exit <- true
+}
+
 func newTimerTask(t Task, d time.Duration) *TimerTask {
 	return &TimerTask{
 		task:     t,
 		duration: d,
+		ticker:   time.NewTicker(d),
+		exit:     make(chan bool),
 	}
 }
 
 // Schedules a function `f` to run at a `d` Duration
-func Schedule(t Task, d time.Duration) {
+func Schedule(t Task, d time.Duration) *TimerTask {
 	timerTask := newTimerTask(t, d)
-	ticker := time.NewTicker(timerTask.duration)
-	taskInvoker(ticker, t)
+	taskInvoker(timerTask)
+	return timerTask
 }
 
-func taskInvoker(ticker *time.Ticker, t Task) {
+func taskInvoker(t *TimerTask) {
 	go func() {
 		for {
 			select {
-			case <-ticker.C:
-				t.run(t.data)
+			case <-t.ticker.C:
+				t.task.run(t.task.data)
+			case <-t.exit:
+				t.ticker.Stop()
 			}
 		}
 	}()
