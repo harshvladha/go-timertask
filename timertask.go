@@ -3,25 +3,25 @@ package timertask
 import "time"
 
 type TimerTask struct {
-	task Task
+	task     Task
 	duration time.Duration
 }
 
 type Task struct {
-	run func(interface{})
+	run  func(interface{})
 	data interface{}
 }
 
 // Creates a new Task with argument which needs to be passed to a function to be scheduled
-func NewTaskWithArgument(f func(interface{}), arg interface{}) (*Task) {
+func NewTaskWithArgument(f func(interface{}), arg interface{}) *Task {
 	return &Task{
-		run: f,
+		run:  f,
 		data: arg,
 	}
 }
 
 // Creates a new Task without argument which needs to be passed to a function to be scheduled
-func NewTask(f func(interface{})) (*Task) {
+func NewTask(f func(interface{})) *Task {
 	run := func(interface{}) {
 		f()
 	}
@@ -33,7 +33,7 @@ func NewTask(f func(interface{})) (*Task) {
 
 func newTimerTask(t Task, d time.Duration) *TimerTask {
 	return &TimerTask{
-		task: t,
+		task:     t,
 		duration: d,
 	}
 }
@@ -44,7 +44,6 @@ func Schedule(t Task, d time.Duration) {
 	ticker := time.NewTicker(timerTask.duration)
 	taskInvoker(ticker, t)
 }
-
 
 func taskInvoker(ticker *time.Ticker, t Task) {
 	go func() {
