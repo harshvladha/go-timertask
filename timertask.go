@@ -63,6 +63,7 @@ func taskInvoker(t *TimerTask) {
 				t.task.run(t.task.data)
 			case <-t.exit:
 				t.ticker.Stop()
+				return
 			}
 		}
 	}()
