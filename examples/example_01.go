@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/harshvladha/timertask"
+	timertask "github.com/harshvladha/gotimertask"
 	"time"
 )
 

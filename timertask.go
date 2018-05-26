@@ -1,4 +1,4 @@
-package timertask
+package gotimertask
 
 import "time"
 
