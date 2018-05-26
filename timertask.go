@@ -23,7 +23,7 @@ func NewTaskWithArgument(f func(interface{}), arg interface{}) *Task {
 }
 
 // Creates a new Task without argument which needs to be passed to a function to be scheduled
-func NewTask(f func(interface{})) *Task {
+func NewTask(f func()) *Task {
 	run := func(interface{}) {
 		f()
 	}
