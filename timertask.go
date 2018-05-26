@@ -3,7 +3,7 @@ package timertask
 import "time"
 
 type TimerTask struct {
-	task     Task
+	task     *Task
 	duration time.Duration
 	ticker   *time.Ticker
 	exit     chan bool
@@ -39,7 +39,7 @@ func (t *TimerTask) Stop() {
 	t.exit <- true
 }
 
-func newTimerTask(t Task, d time.Duration) *TimerTask {
+func newTimerTask(t *Task, d time.Duration) *TimerTask {
 	return &TimerTask{
 		task:     t,
 		duration: d,
@@ -49,7 +49,7 @@ func newTimerTask(t Task, d time.Duration) *TimerTask {
 }
 
 // Schedules a function `f` to run at a `d` Duration
-func Schedule(t Task, d time.Duration) *TimerTask {
+func Schedule(t *Task, d time.Duration) *TimerTask {
 	timerTask := newTimerTask(t, d)
 	taskInvoker(timerTask)
 	return timerTask
