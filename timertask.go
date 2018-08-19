@@ -7,6 +7,7 @@ type TimerTask struct {
 	duration time.Duration
 	ticker   *time.Ticker
 	exit     chan bool
+	stopped  bool
 }
 
 type Task struct {
@@ -35,8 +36,13 @@ func NewTask(f func()) *Task {
 
 // Stops the given timer task from further execution
 // Once stopped it won't run again
+// and again invoking Stop() doesn't do anything
 func (t *TimerTask) Stop() {
-	t.exit <- true
+	if !t.stopped {
+		t.exit <- true
+		t.stopped = true
+		close(t.exit)
+	}
 }
 
 func newTimerTask(t *Task, d time.Duration) *TimerTask {
@@ -45,6 +51,7 @@ func newTimerTask(t *Task, d time.Duration) *TimerTask {
 		duration: d,
 		ticker:   time.NewTicker(d),
 		exit:     make(chan bool),
+		stopped:  false,
 	}
 }
 
